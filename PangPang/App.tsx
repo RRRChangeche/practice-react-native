@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, {useState, useRef} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -10,6 +10,7 @@ import {
   ImageBackground,
   TouchableOpacity,
   Modal,
+  Dimensions,
 } from 'react-native';
 import Video from 'react-native-video';
 
@@ -17,27 +18,44 @@ type SectionProps = {
   title: string;
 };
 
-function Section({ title }: SectionProps): JSX.Element {
+function Section({title}: SectionProps): JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
   return <View style={styles.sectionContainer}></View>;
 }
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
-  const [modalVisible, setModalVisible] = useState(false); // Control the Modal's visibility
+  const [modalVisible, setModalVisible] = useState(false);
+  const [videoPath, setVideoPath] = useState('./assets/video1.mp4'); // Initial video path
 
   const openModal = () => {
-    setModalVisible(true); // Open the Modal when the button is pressed
+    setModalVisible(true);
   };
 
   const closeModal = () => {
-    setModalVisible(false); // Close the Modal
+    setModalVisible(false);
   };
 
-  const videoRef = useRef(null); // Reference to the video player
+  const videoRef = useRef(null);
+  const screenWidth = Dimensions.get('window').width;
 
   const onVideoEnd = () => {
-    closeModal(); // Close the Modal after the video is finished
+    closeModal();
+  };
+
+  const onButton1Press = () => {
+    setVideoPath('./assets/video1.mp4'); // Set video path for Button 1
+    openModal();
+  };
+
+  const onButton2Press = () => {
+    setVideoPath('./assets/video2.mp4'); // Set video path for Button 2
+    openModal();
+  };
+
+  const onButton3Press = () => {
+    setVideoPath('./assets/video3.mp4'); // Set video path for Button 3
+    openModal();
   };
 
   return (
@@ -50,33 +68,35 @@ function App(): React.JSX.Element {
           style={styles.scrollView}>
           <Section title="Custom Section" />
         </ScrollView>
-        {/* Button at the bottom of the screen */}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.button} onPress={openModal}>
-            <Text style={styles.buttonText}>Press Me</Text>
+          <TouchableOpacity style={styles.button} onPress={onButton1Press}>
+            <Text style={styles.buttonText}>Button 1</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={onButton2Press}>
+            <Text style={styles.buttonText}>Button 2</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={onButton3Press}>
+            <Text style={styles.buttonText}>Button 3</Text>
           </TouchableOpacity>
         </View>
       </ImageBackground>
-      {/* Modal Component */}
       <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
         onRequestClose={closeModal}>
-        {/* Gray transparent background */}
         <TouchableOpacity
           style={styles.modalContainer}
-          activeOpacity={1} // Disable default touch feedback
+          activeOpacity={1}
           onPress={closeModal}>
-          {/* Video Player */}
           <Video
             ref={videoRef}
-            source={require('./assets/your_short_video.mp4')}
-            style={styles.video}
-            fullscreen={true} // Play video in fullscreen mode
+            source={videoPath}
+            style={{width: screenWidth, height: screenWidth * 0.5625}}
+            fullscreen={true}
             resizeMode="cover"
             onEnd={onVideoEnd}
-            paused={false} // Start playing the video when modal is opened
+            paused={false}
           />
         </TouchableOpacity>
       </Modal>
@@ -109,31 +129,32 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   buttonContainer: {
-    position: 'absolute',
-    bottom: 20,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingBottom: 20,
   },
   button: {
     backgroundColor: 'blue',
+    flex: 1,
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
+    marginHorizontal: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
+    textAlign: 'center',
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Transparent gray background color
-  },
-  video: {
-    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
 });
 
